@@ -14,8 +14,6 @@ metadata:
     jkube.io/scm-tag: 2.2.10.Final
     prometheus.io/scrape: 'true'
     app.openshift.io/vcs-uri: 'https://github.com/jandradap/request-timer.git'
-  selfLink: /api/v1/namespaces/testrendimiento/services/request-timer
-  resourceVersion: '91921411'
   name: request-timer
   namespace: testrendimiento
   labels:
