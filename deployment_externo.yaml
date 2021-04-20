@@ -1,0 +1,109 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  annotations:
+    jkube.io/git-url: 'https://github.com/jandradap/request-timer.git'
+    jkube.io/git-commit: 408a7d552ac3b34c6a7e0862121f0045c4064af4
+    app.openshift.io/vcs-ref: main
+    jkube.io/scm-url: 'https://github.com/snowdrop/spring-boot-bom/request-timer'
+    jkube.io/git-branch: main
+    jkube.io/issue-tracker-url: 'https://github.com/snowdrop/spring-boot-bom/issues'
+    jkube.io/issue-system: GitHub
+    jkube.io/scm-tag: 2.2.10.Final
+    app.openshift.io/vcs-uri: 'https://github.com/jandradap/request-timer.git'
+  name: request-timer
+  namespace: testrendimiento
+  labels:
+    app: request-timer
+    group: com.redhat.request.timer
+    provider: jkube
+    version: 1.0.0
+spec:
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 3600
+      maxUnavailable: 25%
+      maxSurge: 25%
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 2
+  test: false
+  selector:
+    app: request-timer
+    group: com.redhat.request.timer
+    provider: jkube
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: request-timer
+        group: com.redhat.request.timer
+        provider: jkube
+        version: 1.0.0
+      annotations:
+        jkube.io/git-url: 'https://github.com/jandradap/request-timer.git'
+        jkube.io/git-commit: 408a7d552ac3b34c6a7e0862121f0045c4064af4
+        app.openshift.io/vcs-ref: main
+        jkube.io/scm-url: 'https://github.com/snowdrop/spring-boot-bom/request-timer'
+        jkube.io/git-branch: main
+        jkube.io/issue-tracker-url: 'https://github.com/snowdrop/spring-boot-bom/issues'
+        jkube.io/issue-system: GitHub
+        jkube.io/scm-tag: 2.2.10.Final
+        app.openshift.io/vcs-uri: 'https://github.com/jandradap/request-timer.git'
+    spec:
+      containers:
+        - resources: {}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          name: spring-boot
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 180
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+          securityContext:
+            privileged: false
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: prometheus
+              containerPort: 9779
+              protocol: TCP
+            - name: jolokia
+              containerPort: 8778
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: File
+          image: quay.io/jandradap/request-timer-stress-test:1.0.0
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
