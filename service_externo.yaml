@@ -1,0 +1,39 @@
+kind: Service
+apiVersion: v1
+metadata:
+  annotations:
+    jkube.io/git-url: 'https://github.com/jandradap/request-timer.git'
+    jkube.io/git-commit: 408a7d552ac3b34c6a7e0862121f0045c4064af4
+    app.openshift.io/vcs-ref: main
+    prometheus.io/port: '9779'
+    prometheus.io/path: /metrics
+    jkube.io/scm-url: 'https://github.com/snowdrop/spring-boot-bom/request-timer'
+    jkube.io/git-branch: main
+    jkube.io/issue-tracker-url: 'https://github.com/snowdrop/spring-boot-bom/issues'
+    jkube.io/issue-system: GitHub
+    jkube.io/scm-tag: 2.2.10.Final
+    prometheus.io/scrape: 'true'
+    app.openshift.io/vcs-uri: 'https://github.com/jandradap/request-timer.git'
+  selfLink: /api/v1/namespaces/testrendimiento/services/request-timer
+  resourceVersion: '91921411'
+  name: request-timer
+  namespace: testrendimiento
+  labels:
+    app: request-timer
+    expose: 'true'
+    group: com.redhat.request.timer
+    monitored: prometheus
+    provider: jkube
+    version: 1.0.0
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: request-timer
+    group: com.redhat.request.timer
+    provider: jkube
+  type: ClusterIP
+  sessionAffinity: None
